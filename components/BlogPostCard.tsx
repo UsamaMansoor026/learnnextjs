@@ -30,7 +30,7 @@ const BlogPostCard = ({ data }: blogPostCardProps) => {
         </div>
 
         <div className="p-4">
-          <h3 className="mb-2 text-lg font-medium text-gray-900">
+          <h3 className="mb-2 text-lg font-medium text-gray-900 leading-5 min-h-[45px]">
             {data.title}
           </h3>
 

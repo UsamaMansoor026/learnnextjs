@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React from "react";
+import React, { Suspense } from "react";
 import prisma from "../utils/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import BlogPostCard from "@/components/BlogPostCard";
@@ -13,12 +13,7 @@ async function getData(userId: string | undefined) {
   return data;
 }
 
-const Dashboard = async () => {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  const data = await getData(user?.id);
-
+const Dashboard = () => {
   return (
     <div className=" mt-8">
       <div className="flex justify-between items-center mb-4">
@@ -32,12 +27,31 @@ const Dashboard = async () => {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {data?.length > 0 &&
-          data.map((item: any) => <BlogPostCard key={item.id} data={item} />)}
-      </div>
+      <Suspense
+        fallback={
+          <p className="text-center my-16 text-lg text-gray-600">
+            Please Wait..... posts are loading
+          </p>
+        }
+      >
+        <GetPosts />
+      </Suspense>
     </div>
   );
 };
 
 export default Dashboard;
+
+async function GetPosts() {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
+  const data = await getData(user?.id);
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      {data?.length > 0 &&
+        data.map((item: any) => <BlogPostCard key={item.id} data={item} />)}
+    </div>
+  );
+}
